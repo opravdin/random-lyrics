@@ -13,14 +13,14 @@ type Processor struct {
 	TaggedLines  map[*Tag][]*string
 }
 
-func New() Processor {
+func New() *Processor {
 	rb := InitBook()
 	tagged := make(map[*Tag][]*string)
 	proc := Processor{
 		rb, sync.Mutex{}, tagged,
 	}
 
-	return proc
+	return &proc
 }
 
 func (p *Processor) initTaggedLines() {
@@ -31,10 +31,10 @@ func (p *Processor) initTaggedLines() {
 	p.accessTagged.Unlock()
 }
 
-func (p Processor) ValidateTags() error {
-	for tname, tag := range p.RecipeBook.Tags {
+func (p *Processor) ValidateTags() error {
+	for tagName, tag := range p.RecipeBook.Tags {
 		if len(p.TaggedLines[tag]) == 0 {
-			return errors.New("No lines for tag " + tname)
+			return errors.New("No lines for tag " + tagName)
 		}
 	}
 	return nil
@@ -58,7 +58,7 @@ func (p *Processor) ProvideLines(lines []string) {
 	}
 }
 
-func (p Processor) provideRndByTag(tag *Tag) *string {
+func (p *Processor) provideRndByTag(tag *Tag) *string {
 	optCount := len(p.TaggedLines[tag])
 	getId := rand.Intn(optCount)
 	log.Printf("searching line by %s, have %d options, get by key %d", tag.Re.String(), optCount, getId)
